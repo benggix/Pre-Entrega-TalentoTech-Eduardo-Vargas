@@ -33,12 +33,13 @@ public abstract class Articulo {
 
   @Override
   public String toString() {
-    return "Articulo{" +
+    return "Articulo {" +
             "nombre='" + nombre + '\'' +
             ", precio=" + precio +
             ", codigo=" + codigo +
-            ", categoria=" + categoria +
-            ", tipo=" + tipo +
+            ", categoria='" + categoria.getNombre() + '\'' +
+            ", tipo='" + tipo + '\'' +
+            ", detalle='" + getDetalleEspecifico() + '\'' +
             '}';
   }
 }

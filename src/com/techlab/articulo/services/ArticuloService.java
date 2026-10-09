@@ -12,9 +12,24 @@ public class ArticuloService implements CrudRepository<Articulo> {
   private final List<Articulo> listaArticulos = new ArrayList<>(); // la referencia a la lista sera constante para evitar que se destruya la misma o sea reasignada por una nueva coleccion.
 
   @Override
-  public void guardar(Articulo elemento) { // esperamos recibir un objeto Articulo
-    listaArticulos.add(elemento);
+  public void guardar(Articulo nuevo) { // esperamos recibir un objeto Articulo
+
+    // 1. Validamos que el codigo del articulo no esté repetido
+    for (Articulo a: listaArticulos) {
+      if (a.getCodigo() == nuevo.getCodigo()){
+        throw new IllegalArgumentException("Error: El articulo ya existe");
+      }
+    }
+    // 2. Validamos que el articulo nuevo a guadar no tenga la misma descripción o nombre
+    for (Articulo a: listaArticulos) {
+      if (a.getNombre().trim().equalsIgnoreCase(nuevo.getNombre().trim())) {
+        throw new IllegalArgumentException("Error: Ya existe un articulo con este nombre");
+      }
+    }
+    // Si paso por todas las validaciones sin lanzar una excepcion, recien se guarda el articulo.
+    listaArticulos.add(nuevo);
   }
+
 
   @Override
   public List<Articulo> listarTodo() {

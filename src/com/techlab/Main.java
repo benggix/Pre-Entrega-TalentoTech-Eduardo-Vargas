@@ -1,6 +1,9 @@
 package com.techlab;
 
+import com.techlab.articulo.model.Alimenticio;
+import com.techlab.articulo.model.Articulo;
 import com.techlab.articulo.model.Categoria;
+import com.techlab.articulo.model.Electronico;
 import com.techlab.articulo.services.ArticuloService;
 
 import java.util.ArrayList;
@@ -11,9 +14,10 @@ public class Main {
   private static final ArticuloService articuloServicio = new ArticuloService();
   private static final List<Categoria> listaCategorias = new ArrayList<>(); // donde estara la lista de articulos
   private static final Scanner sc = new Scanner(System.in);
+  private static final String SOLO_LETRAS_Y_ESPACIOS = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$";
 
   private static void cargarCateoria(Categoria... categoria) {
-    listaCategorias.addAll(listaCategorias);
+    listaCategorias.addAll(List.of(categoria));
 
   }
 
@@ -29,7 +33,7 @@ public class Main {
     int opcion;
     do {
       mostrarMenu();
-      opcion = leerEnteroSeguro("Ingrese una opcion");
+      opcion = leerEnteroSeguro("Ingrese una opcion: ");
       switch (opcion) {
         case 1 -> ingresarArticulo();
         case 2 -> listarArticulo();
@@ -57,7 +61,7 @@ public class Main {
 
   private static int leerEnteroSeguro(String mensaje) {
     while (true) {
-      System.out.println(mensaje);
+      System.out.print(mensaje);
       try {
         String opcion = sc.nextLine().trim();
         return Integer.parseInt(opcion);
@@ -68,13 +72,19 @@ public class Main {
 
   private static String leerStringSeguro(String mensaje) {
     while (true) {
-      System.out.println(mensaje);
+      System.out.print(mensaje);
       String input = sc.nextLine().trim();
       if (input.isEmpty()) {
         System.out.println("No puede estar vacio!");
+        continue; // para evaluar nuevamente el while
+      }
+
+      if (!input.matches(SOLO_LETRAS_Y_ESPACIOS)) {
+        System.out.println("Error: no debe contener numeros, solo letras y espacios");
         continue;
       }
-      if (input.length() < 3) { // no hace falta el .trim() porque ya lo ejecutamos apenas recibimos la entrada del sc.
+
+      if (input.length() < 4) { // no hace falta el .trim() porque ya lo ejecutamos apenas recibimos la entrada del sc.
         System.out.println("El articulo debe ser mayor a 3 letras");
         continue;
       }
@@ -91,16 +101,52 @@ public class Main {
     int codigo = leerEnteroSeguro("Ingrese el codigo del articulo: ");
     String nombre = leerStringSeguro("Ingrese el nombre del artículo: ");
     double precio = leerEnteroSeguro("Ingrese el precio del artículo: ");
-    listarCategorias();
 
+    listarCategorias();
     int codigoCategoria = leerEnteroSeguro("Ingrese el código de la categoría: ");
-    Categoria categoria = buscarCategoria(codigo);
+    Categoria categoria = buscarCategoria(codigoCategoria);
+
+    Articulo nuevoArticulo = null;
+    if (tipo == 1) {
+      int garantia = leerEnteroSeguro("Ingrese la garantia en meses: ");
+      nuevoArticulo = new Electronico(nombre, precio, codigo, categoria, garantia);
+    } else if (tipo == 2) {
+      int dias = leerEnteroSeguro("Ingrese los días para vencimiento: ");
+      nuevoArticulo = new Alimenticio(nombre, precio, codigo, categoria, dias);
+    }
+    if (nuevoArticulo!= null) {
+      articuloServicio.guardar(nuevoArticulo); // validacion necesaria: nuevoArticulo puede ser null porque si el tipo ingresado por el usuario no es 1 ni 2 (los permitidos), se guardaran tipos no validos.
+      System.out.println("Artículo ingresado correctamente.\n" +"Resumen del objeto creado:");
+      System.out.println(nuevoArticulo);
+    }
+
+
 
 
 
   }
-  private static void listarArticulo(){}
-  private static void consultarArticulo(){}
+  private static void listarArticulo(){
+    List<Articulo> articulos = articuloServicio.listarTodo();
+    System.out.println("\n--- LISTADO DE ARTÍCULOS ---");
+    if (!articulos.isEmpty()) {
+      for (Articulo a : articulos) {
+        System.out.println(a); // imprime cada objeto articulo (se ejecuta el toString() polimorfico)
+      }
+    }
+    System.out.println("No hay articulos cargados.");
+  }
+  private static void consultarArticulo(){
+    List<Articulo> articulos = articuloServicio.listarTodo();
+    System.out.println("\n--- CATEGORÍAS DISPONIBLES ---");
+    if (!articulos.isEmpty()) {
+      int codigo = leerEnteroSeguro("Ingrese el codigo del articulo");
+      Articulo articulo = articuloServicio.buscarPorCodigo(codigo);
+      System.out.println(articulo);
+    } else {
+      System.out.println("Error: No hay articulos cargados");
+    }
+  }
+
   private static void modificarArticulo(){}
   private static void eliminarArticulo(){}
 

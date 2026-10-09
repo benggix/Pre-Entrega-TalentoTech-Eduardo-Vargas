@@ -5,8 +5,9 @@ import com.techlab.articulo.enums.TipoArticulo;
 public class Alimenticio extends Articulo {
   private int diasVencimiento;
 
-  public Alimenticio(String nombre, double precio, int codigo, Categoria categoria, TipoArticulo tipo) {
-    super(nombre, precio, codigo, categoria, tipo);
+  public Alimenticio(String nombre, double precio, int codigo, Categoria categoria, int diasVencimiento) {
+    super(nombre, precio, codigo, categoria, TipoArticulo.ALIMENTICIO);
+    this.diasVencimiento = diasVencimiento;
   }
 
   public int getDiasVencimiento() {
@@ -19,7 +20,7 @@ public class Alimenticio extends Articulo {
 
   @Override
   public String getDetalleEspecifico() {
-    return String.format("Detalle especifico: Dias para vencimiento: %d dias%n", getDiasVencimiento() );
+    return String.format("Dias para vencimiento: %d dias%n", getDiasVencimiento() );
   }
 
   @Override

@@ -26,7 +26,10 @@ public class Categoria {
 
   @Override
   public String toString() {
-    return String.format("codigo=%d, nombre=%s, descripcion=%s",
-            getCodigo(), getNombre(), getDescripcion());
+    return "Categoria{" +
+            "codigo=" + codigo +
+            ", nombre='" + nombre + '\'' +
+            ", descripcion='" + descripcion + '\'' +
+            '}';
   }
 }
